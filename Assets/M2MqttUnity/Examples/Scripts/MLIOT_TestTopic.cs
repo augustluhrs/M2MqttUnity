@@ -58,9 +58,9 @@ namespace M2MqttUnity.Examples
 
         public void TestPublish()
         {
-            client.Publish("bulb", System.Text.Encoding.UTF8.GetBytes("turn on"), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
-            Debug.Log("Test message to bulb published");
-            AddUiMessage("Test message published.");
+            client.Publish("lights", System.Text.Encoding.UTF8.GetBytes("248"), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+            Debug.Log("Test message to lights published");
+            AddUiMessage("Light message published.");
         }
 
         public void SetBrokerAddress(string brokerAddress)
@@ -122,12 +122,12 @@ namespace M2MqttUnity.Examples
 
         protected override void SubscribeTopics()
         {
-            client.Subscribe(new string[] { "bulb" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
+            client.Subscribe(new string[] { "lights" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
         }
 
         protected override void UnsubscribeTopics()
         {
-            client.Unsubscribe(new string[] { "bulb" });
+            client.Unsubscribe(new string[] { "lights" });
         }
 
         protected override void OnConnectionFailed(string errorMessage)
@@ -205,7 +205,7 @@ namespace M2MqttUnity.Examples
             string msg = System.Text.Encoding.UTF8.GetString(message);
             Debug.Log("Received: " + msg);
             StoreMessage(msg);
-            if (topic == "M2MQTT_Unity/test")
+            if (topic == "lights")
             {
                 if (autoTest)
                 {
