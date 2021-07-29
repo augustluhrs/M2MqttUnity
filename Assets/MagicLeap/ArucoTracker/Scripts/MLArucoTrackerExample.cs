@@ -16,12 +16,13 @@ namespace MagicLeap
     using UnityEngine;
     using UnityEngine.UI;
     using UnityEngine.XR.MagicLeap;
+    using TMPro;
 
     public class MLArucoTrackerExample : MonoBehaviour
     {
         public MLArucoTracker.Settings trackerSettings = MLArucoTracker.Settings.Create();
         public GameObject MLArucoMarkerPrefab;
-        public Text statusText;
+        public TextMeshPro statusText;
 
         private HashSet<int> _arucoMarkerIds = new HashSet<int>();
         private bool _bumperReleased = true;

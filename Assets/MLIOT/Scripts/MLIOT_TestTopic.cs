@@ -123,6 +123,7 @@ namespace M2MqttUnity.Examples
         protected override void SubscribeTopics()
         {
             client.Subscribe(new string[] { "lights" }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
+            
         }
 
         protected override void UnsubscribeTopics()

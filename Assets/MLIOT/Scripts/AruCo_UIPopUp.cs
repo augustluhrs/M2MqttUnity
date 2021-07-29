@@ -17,20 +17,23 @@ namespace MagicLeap
     using UnityEngine;
     using UnityEngine.UI;
     using UnityEngine.XR.MagicLeap;
+    using TMPro;
 
     public class AruCo_UIPopUp : MonoBehaviour
     {
         public MLArucoTracker.Settings trackerSettings = MLArucoTracker.Settings.Create();
         public GameObject MLArucoMarkerPrefab;
-        //public Text statusText;
+        public GameObject arucoParent;
+        public TextMeshPro statusText;
         [Header("UI Elements")]
-        public GameObject LeftButton;
-        public GameObject RightButton;
-        public GameObject HueSlider;
+        public GameObject leftButton;
+        public GameObject rightButton;
+        public GameObject hueSlider;
 
+        private Vector3 markerPos = new Vector3();
 
         private HashSet<int> _arucoMarkerIds = new HashSet<int>();
-        //private bool _bumperReleased = true;
+        private bool _bumperReleased = true;
         private bool _triggerReleased = true;
         //private const MLArucoTracker.DictionaryName MaxDictionaryEnum = MLArucoTracker.DictionaryName.DICT_ARUCO_ORIGINAL;
         private MLInput.Controller controller = null;
@@ -40,7 +43,7 @@ namespace MagicLeap
 #if PLATFORM_LUMIN
             MLArucoTracker.UpdateSettings(trackerSettings);
             MLArucoTracker.OnMarkerStatusChange += OnMarkerStatusChange;
-            //SetStatusText();
+            SetStatusText();
 
             //make sure both hands work
             MagicLeapDeviceManager.Instance.CurrentHandSettings = MagicLeapDeviceManager.HandSettings.Both;
@@ -58,25 +61,34 @@ namespace MagicLeap
                 return;
             }
 
-            //if (controller.IsBumperDown == true)
-            //{
-            //    if (_bumperReleased)
-            //    {
-            //        //IterateTrackerDictionarySetting();
-            //    }
+            if (controller.IsBumperDown == true)
+            {
+                if (_bumperReleased)
+                {
+                    //IterateTrackerDictionarySetting();
 
-            //    _bumperReleased = false;
-            //}
-            //else
-            //{
-            //    _bumperReleased = true;
-            //}
+                    ToggleAruco();
+
+                    //reset marker pos -- this does nothing apparently
+                    arucoParent.SetActive(true);
+                    arucoParent.transform.position = markerPos;
+
+                    _bumperReleased = false;
+
+                }
+
+                //_bumperReleased = false;
+            }
+            else
+            {
+                _bumperReleased = true;
+            }
 
             if (controller.TriggerValue >= 0.25f)
             {
                 if (_triggerReleased)
                 {
-                    ToggleAruco();
+                    //ToggleAruco();
                     _triggerReleased = false;
                 }
             }
@@ -143,16 +155,17 @@ namespace MagicLeap
 #endif
         }
 
-        //private void SetStatusText()
-        //{
-        //    statusText.text = $"Tracker Enabled: {trackerSettings.Enabled}\n\n";
-        //    statusText.text = $"Dictionary: {trackerSettings.Dictionary}\n\n";
-        //    statusText.text += "ArUco markers detected:\n";
-        //    foreach (int markerId in _arucoMarkerIds)
-        //    {
-        //        statusText.text += string.Format("Marker {0}\n", markerId);
-        //    }
-        //}
+        private void SetStatusText()
+        {
+            statusText.text = $"Tracker Enabled: {trackerSettings.Enabled}\n\n";
+            statusText.text += $"Dictionary: {trackerSettings.Dictionary}\n\n";
+            statusText.text += "ArUco markers detected:\n";
+            foreach (int markerId in _arucoMarkerIds)
+            {
+                statusText.text += string.Format("Marker {0}\n", markerId);
+            }
+            statusText.text += $"Marker Pos: {markerPos}";
+        }
 
         private void OnMarkerStatusChange(MLArucoTracker.Marker marker, MLArucoTracker.Marker.TrackingStatus status)
         {
@@ -164,16 +177,21 @@ namespace MagicLeap
                     return;
                 }
 
+                markerPos = marker.Position;
+
                 GameObject arucoMarker = Instantiate(MLArucoMarkerPrefab);
+
+                //activate the marker object and its ui children
+                //arucoMarker.SetActive(true);
                 MLArucoTrackerBehavior arucoBehavior = arucoMarker.GetComponent<MLArucoTrackerBehavior>();
 
                 //Activate UI elements and parent them to the marker
-                LeftButton.SetActive(true);
-                RightButton.SetActive(true);
-                HueSlider.SetActive(true);
-                LeftButton.transform.parent = arucoMarker.transform;
-                RightButton.transform.parent = arucoMarker.transform;
-                HueSlider.transform.parent = arucoMarker.transform;
+                //leftButton.SetActive(true);
+                //rightButton.SetActive(true);
+                //hueSlider.SetActive(true);
+                //leftButton.transform.parent = arucoMarker.transform;
+                //rightButton.transform.parent = arucoMarker.transform;
+                //hueSlider.transform.parent = arucoMarker.transform;
 
                 arucoBehavior.MarkerId = marker.Id;
                 arucoBehavior.MarkerDictionary = MLArucoTracker.TrackerSettings.Dictionary;
@@ -184,11 +202,11 @@ namespace MagicLeap
                 _arucoMarkerIds.Remove(marker.Id);
             }
 
-            //SetStatusText();
+            SetStatusText();
 #endif
         }
 
-//        private void IterateTrackerDictionarySetting()
+        //private void IterateTrackerDictionarySetting()
 //        {
 //            if (trackerSettings.Dictionary == MaxDictionaryEnum)
 //            {
@@ -202,7 +220,7 @@ namespace MagicLeap
 //            MLArucoTracker.UpdateSettings(trackerSettings);
 //#endif
 //            _arucoMarkerIds.Clear();
-//            //SetStatusText();
+//            SetStatusText();
 //        }
 
     }
